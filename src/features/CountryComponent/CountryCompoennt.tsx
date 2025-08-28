@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styles from "./CountryCompoenent.module.css";
-import type { TSettings } from "../../utils/types.types";
 
 export const CountryComponent = ({
   data,
@@ -13,7 +12,7 @@ export const CountryComponent = ({
     iso: string | null;
     [key: string]: string | number | null | undefined;
   };
-  settings: TSettings;
+  settings: Array<string>;
 }) => {
   const [detailed, setIsDetailed] = useState(false);
   return (
@@ -37,7 +36,7 @@ export const CountryComponent = ({
             <table className={styles["inside-data"]}>
               <thead>
                 <tr>
-                  {Object.entries(settings).map(([key, isVisible]) =>
+                  {settings.map(([key, isVisible]) =>
                     isVisible ? <th key={key}>{key}</th> : null
                   )}
                 </tr>

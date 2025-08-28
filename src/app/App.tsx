@@ -4,6 +4,7 @@ import { Modal } from "../components/Modal/Modal";
 import cslx from "clsx";
 import { CountryComponent } from "../features/CountryComponent/CountryCompoennt";
 import type { TSettings } from "../utils/types.types";
+import { Settings } from "../components/Settings/Settings";
 
 const countries = [
   {
@@ -18,15 +19,13 @@ const countries = [
   { name: "Germany", region: "Europe", population: 83000000, iso: null },
 ];
 
-const years = [2025, 2024, 2023, 2022, 2021];
-const regions = ["All", "Americas", "Asia", "Europe"];
-
-const settings: TSettings = {
-  year: true,
-  population: true,
-  co2: true,
-  co2_per_capita: true,
-};
+const regions: string[] = ["All", "Europe", "Asia", "Americas", "Africa"];
+const availableFields: string[] = [
+  "year",
+  "population",
+  "co2",
+  "co2_per_capita",
+];
 
 export const App = () => {
   const [selectedYear, setSelectedYear] = useState(2025);
@@ -35,6 +34,13 @@ export const App = () => {
   const [sortOption, setSortOption] = useState("name-asc");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [settings, setSettings] = useState([
+    "year",
+    "population",
+    "co2",
+    "co2_per_capita",
+  ]);
 
   useEffect(() => {
     console.log("shall fetch data here");
@@ -59,17 +65,14 @@ export const App = () => {
         </label>
         <label>
           Year:
-          <select
+          <input
             value={selectedYear}
             onChange={(e) => setSelectedYear(Number(e.target.value))}
             className={styles.select}
-          >
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
+            type="number"
+            min={1600}
+            max={2026}
+          ></input>
         </label>
         <label>
           Region:
@@ -104,10 +107,11 @@ export const App = () => {
         Select Columns
       </button>
       <Modal isOpen={isModalOpen} handleClose={() => setIsModalOpen(false)}>
-        <div>
-          <h3>Select columns</h3>
-          {["year", "population", "co2", "co2_per_capita"]}
-        </div>
+        <Settings
+          availableFields={availableFields}
+          selectedFields={settings}
+          onChange={setSettings}
+        />
       </Modal>
       <main className={styles.main}>
         <table className={cslx(styles.table, styles["all-data"])}>
