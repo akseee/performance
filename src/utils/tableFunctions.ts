@@ -1,4 +1,4 @@
-import type { CountryData } from "./types.types";
+import type { CO2Data, CountryData } from "./types.types";
 
 export function filterQuery(array: CountryData[], query: string) {
   if (!query.trim()) return array;
@@ -32,4 +32,20 @@ export function sortCountries(array: CountryData[], type: string) {
     default:
       return arr;
   }
+}
+
+export function extractSettings(array: CO2Data[]) {
+  const sample: CO2Data | undefined = array[0];
+
+  if (!sample) return {} as Record<keyof CO2Data, boolean>;
+
+  const settings = Object.keys(sample).reduce(
+    (acc, key) => {
+      acc[key as keyof CO2Data] = false;
+      return acc;
+    },
+    {} as Record<keyof CO2Data, boolean>
+  );
+
+  return settings;
 }

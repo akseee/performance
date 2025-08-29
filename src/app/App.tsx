@@ -9,15 +9,18 @@ import {
   filterYear,
   sortCountries,
 } from "../utils/tableFunctions";
-// import { Loader } from "../components/Loader/Loader";
+import { Modal } from "../components/Modal/Modal";
+import { Settings } from "../components/Settings/Settings";
 
 export const App = () => {
   const [selectedYear, setSelectedYear] = useState(2023);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("name-asc");
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [settings, setSettings] = useState([
-  // ]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedSettings, setSelectedSettings] = useState<
+    Array<keyof CO2Data>
+  >([]);
 
   const [dataRaw, setDataRaw] = useState<CO2 | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -52,14 +55,12 @@ export const App = () => {
 
   const countries = useMemo(() => {
     if (dataRaw === null) return [];
-
     return Object.entries(dataRaw).map(([name, payload]) => {
       const arr: CO2Data[] = Array.isArray(payload.data) ? payload.data : [];
       const latest =
         arr.length > 0
           ? arr.reduce((acc, cur) => (acc.year > cur.year ? acc : cur), arr[0])
           : undefined;
-      console.log(latest?.year);
       return {
         name,
         iso:
@@ -132,16 +133,15 @@ export const App = () => {
         </label>
       </section>
 
-      {/* <button className={styles.button} onClick={() => setIsModalOpen(true)}>
+      <button className={styles.button} onClick={() => setIsModalOpen(true)}>
         Select Columns
       </button>
       <Modal isOpen={isModalOpen} handleClose={() => setIsModalOpen(false)}>
         <Settings
-          availableFields={availableFields}
-          selectedFields={settings}
-          onChange={setSettings}
+          selectedFields={selectedSettings}
+          onChange={setSelectedSettings}
         />
-      </Modal> */}
+      </Modal>
       <main className={styles.main}>
         {error && <div> An error has occured: {error}</div>}
         <table className={cslx(styles.table, styles["all-data"])}>
@@ -151,11 +151,20 @@ export const App = () => {
               <th>name</th>
               <th>population (latest)</th>
               <th>ISO</th>
+              {selectedSettings.map((item: string, index) => {
+                return <th key={index}>{item}</th>;
+              })}
             </tr>
           </thead>
           <tbody>
             {sortedCountries.map((c, index) => {
-              return <CountryComponent key={index} data={c} />;
+              return (
+                <CountryComponent
+                  key={index}
+                  data={c}
+                  settings={selectedSettings}
+                />
+              );
             })}
           </tbody>
         </table>

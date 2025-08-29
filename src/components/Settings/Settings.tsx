@@ -1,19 +1,18 @@
+import { settings } from "../../utils/contants";
 import type { CO2Data } from "../../utils/types.types";
 import styles from "./Settings.module.css";
 import React from "react";
 
 interface SettingsProps {
-  availableFields: CO2Data[];
-  selectedFields: string[];
-  onChange: (fields: string[]) => void;
+  selectedFields: Array<keyof CO2Data>;
+  onChange: (fields: Array<keyof CO2Data>) => void;
 }
 
 export const Settings: React.FC<SettingsProps> = ({
-  availableFields,
   selectedFields,
   onChange,
 }) => {
-  const handleToggle = (field: string) => {
+  const handleToggle = (field: keyof CO2Data) => {
     if (selectedFields.includes(field)) {
       onChange(selectedFields.filter((f) => f !== field));
     } else {
@@ -25,13 +24,13 @@ export const Settings: React.FC<SettingsProps> = ({
     <div className={styles.container}>
       <h3 className={styles.title}>Select columns</h3>
       <ul className={styles.fieldList}>
-        {availableFields.map((field, index) => (
+        {settings.map((field, index) => (
           <li key={index}>
             <label>
               <input
                 type="checkbox"
-                checked={selectedFields.includes(field)}
-                onChange={() => handleToggle(field)}
+                checked={selectedFields.includes(field as keyof CO2Data)}
+                onChange={() => handleToggle(field as keyof CO2Data)}
               />
               {field}
             </label>
