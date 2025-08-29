@@ -1,8 +1,9 @@
+import type { CO2Data } from "../../utils/types.types";
 import styles from "./Settings.module.css";
 import React from "react";
 
 interface SettingsProps {
-  availableFields: string[];
+  availableFields: CO2Data[];
   selectedFields: string[];
   onChange: (fields: string[]) => void;
 }
@@ -24,8 +25,8 @@ export const Settings: React.FC<SettingsProps> = ({
     <div className={styles.container}>
       <h3 className={styles.title}>Select columns</h3>
       <ul className={styles.fieldList}>
-        {availableFields.map((field) => (
-          <li key={field}>
+        {availableFields.map((field, index) => (
+          <li key={index}>
             <label>
               <input
                 type="checkbox"

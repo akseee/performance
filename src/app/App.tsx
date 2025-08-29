@@ -1,50 +1,110 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "./App.module.css";
-import { Modal } from "../components/Modal/Modal";
+
 import cslx from "clsx";
-import { CountryComponent } from "../features/CountryComponent/CountryCompoennt";
-import type { TSettings } from "../utils/types.types";
-import { Settings } from "../components/Settings/Settings";
-
-const countries = [
-  {
-    name: "United States",
-    region: "Americas",
-    population: 331000000,
-    iso: "iso",
-  },
-  { name: "China", region: "Asia", population: 1412000000, iso: "iso" },
-  { name: "India", region: "Asia", population: 1380000000, iso: "iso" },
-  { name: "Russia", region: "Europe", population: 146000000, iso: "iso" },
-  { name: "Germany", region: "Europe", population: 83000000, iso: null },
-];
-
-const regions: string[] = ["All", "Europe", "Asia", "Americas", "Africa"];
-const availableFields: string[] = [
-  "year",
-  "population",
-  "co2",
-  "co2_per_capita",
-];
+import type { CO2, CO2Data } from "../utils/types.types";
+import { CountryComponent } from "../features/CountryComponent/CountryComponent";
+// import { Loader } from "../components/Loader/Loader";
 
 export const App = () => {
-  const [selectedYear, setSelectedYear] = useState(2025);
-  const [regionFilter, setRegionFilter] = useState("All");
+  const [selectedYear, setSelectedYear] = useState(2023);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("name-asc");
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [settings, setSettings] = useState([
+  // ]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [settings, setSettings] = useState([
-    "year",
-    "population",
-    "co2",
-    "co2_per_capita",
-  ]);
+  const [dataRaw, setDataRaw] = useState<CO2 | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("shall fetch data here");
+    const controller = new AbortController();
+    setError(null);
+    fetch(
+      "https://nyc3.digitaloceanspaces.com/owid-public/data/co2/owid-co2-data.json",
+      { signal: controller.signal }
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      })
+      .then((data: CO2) => {
+        setDataRaw(data);
+      })
+      .catch((err) => {
+        if ((err as Error).name === "AbortError") {
+          return;
+        }
+        setError(String(err));
+      });
+
+    return () => {
+      controller.abort();
+    };
   }, []);
+
+  const countries = useMemo(() => {
+    if (dataRaw === null) return [];
+
+    return Object.entries(dataRaw).map(([name, payload]) => {
+      const arr: CO2Data[] = Array.isArray(payload.data) ? payload.data : [];
+      const latest =
+        arr.length > 0
+          ? arr.reduce((acc, cur) => (acc.year > cur.year ? acc : cur), arr[0])
+          : undefined;
+      console.log(latest?.year);
+      return {
+        name,
+        iso:
+          typeof payload.iso_code === "string" && payload.iso_code
+            ? payload.iso_code
+            : null,
+        population: latest
+          ? typeof latest.population === "number"
+            ? latest.population
+            : null
+          : null,
+        data: arr,
+        year: latest?.year,
+      } as const;
+    });
+  }, [dataRaw]);
+
+  const filteredQuery = useMemo(() => {
+    if (!searchQuery.trim()) return countries;
+    const lower = searchQuery.toLowerCase();
+
+    return countries.filter((c) => c.name.toLowerCase().includes(lower));
+  }, [countries, searchQuery]);
+
+  const filteredYear = useMemo(() => {
+    return filteredQuery.map((country) => {
+      const yearData = country.data.find((d) => d.year === selectedYear);
+      return {
+        ...country,
+        population: yearData?.population ?? null,
+        year: yearData?.year ?? null,
+      };
+    });
+  }, [filteredQuery, selectedYear]);
+
+  const sortedCountries = useMemo(() => {
+    const arr = [...filteredYear];
+    switch (sortOption) {
+      case "name-asc":
+        return arr.sort((a, b) => a.name.localeCompare(b.name));
+      case "name-desc":
+        return arr.sort((a, b) => b.name.localeCompare(a.name));
+      case "population-asc":
+        return arr.sort((a, b) => (a.population ?? 0) - (b.population ?? 0));
+      case "population-desc":
+        return arr.sort((a, b) => (b.population ?? 0) - (a.population ?? 0));
+      default:
+        return arr;
+    }
+  }, [filteredYear, sortOption]);
 
   return (
     <div className={styles.container}>
@@ -71,22 +131,8 @@ export const App = () => {
             className={styles.select}
             type="number"
             min={1600}
-            max={2026}
+            max={2023}
           ></input>
-        </label>
-        <label>
-          Region:
-          <select
-            value={regionFilter}
-            onChange={(e) => setRegionFilter(e.target.value)}
-            className={styles.select}
-          >
-            {regions.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
         </label>
         <label>
           Sort by:
@@ -103,7 +149,7 @@ export const App = () => {
         </label>
       </section>
 
-      <button className={styles.button} onClick={() => setIsModalOpen(true)}>
+      {/* <button className={styles.button} onClick={() => setIsModalOpen(true)}>
         Select Columns
       </button>
       <Modal isOpen={isModalOpen} handleClose={() => setIsModalOpen(false)}>
@@ -112,22 +158,21 @@ export const App = () => {
           selectedFields={settings}
           onChange={setSettings}
         />
-      </Modal>
+      </Modal> */}
       <main className={styles.main}>
+        {error && <div> An error has occured: {error}</div>}
         <table className={cslx(styles.table, styles["all-data"])}>
           <thead className={styles.headers}>
             <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Population (latest)</th>
+              <th>year</th>
+              <th>name</th>
+              <th>population (latest)</th>
               <th>ISO</th>
             </tr>
           </thead>
           <tbody>
-            {countries.map((c, index) => {
-              return (
-                <CountryComponent key={index} data={c} settings={settings} />
-              );
+            {sortedCountries.map((c, index) => {
+              return <CountryComponent key={index} data={c} />;
             })}
           </tbody>
         </table>

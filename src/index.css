@@ -73,7 +73,9 @@ button:focus-visible {
 }
 
 td {
+  padding: 1em;
   text-align: center;
+  background-color: rgb(235, 224, 224);
 }
 
 #modal-root {
@@ -84,4 +86,9 @@ td {
 
 li {
   list-style: none;
+}
+
+th {
+  padding: 1em 2em;
+  text-transform: uppercase;
 }
