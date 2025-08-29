@@ -23,6 +23,13 @@ export const Settings: React.FC<SettingsProps> = ({
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>Select columns</h3>
+      <button
+        onClick={() => {
+          onChange([]);
+        }}
+      >
+        Clear
+      </button>
       <ul className={styles.fieldList}>
         {settings.map((field, index) => (
           <li key={index}>
