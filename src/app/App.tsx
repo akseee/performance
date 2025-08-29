@@ -4,6 +4,11 @@ import styles from "./App.module.css";
 import cslx from "clsx";
 import type { CO2, CO2Data } from "../utils/types.types";
 import { CountryComponent } from "../features/CountryComponent/CountryComponent";
+import {
+  filterQuery,
+  filterYear,
+  sortCountries,
+} from "../utils/tableFunctions";
 // import { Loader } from "../components/Loader/Loader";
 
 export const App = () => {
@@ -68,42 +73,20 @@ export const App = () => {
           : null,
         data: arr,
         year: latest?.year,
-      } as const;
+      };
     });
   }, [dataRaw]);
 
   const filteredQuery = useMemo(() => {
-    if (!searchQuery.trim()) return countries;
-    const lower = searchQuery.toLowerCase();
-
-    return countries.filter((c) => c.name.toLowerCase().includes(lower));
+    return filterQuery(countries, searchQuery);
   }, [countries, searchQuery]);
 
   const filteredYear = useMemo(() => {
-    return filteredQuery.map((country) => {
-      const yearData = country.data.find((d) => d.year === selectedYear);
-      return {
-        ...country,
-        population: yearData?.population ?? null,
-        year: yearData?.year ?? null,
-      };
-    });
+    return filterYear(filteredQuery, selectedYear);
   }, [filteredQuery, selectedYear]);
 
   const sortedCountries = useMemo(() => {
-    const arr = [...filteredYear];
-    switch (sortOption) {
-      case "name-asc":
-        return arr.sort((a, b) => a.name.localeCompare(b.name));
-      case "name-desc":
-        return arr.sort((a, b) => b.name.localeCompare(a.name));
-      case "population-asc":
-        return arr.sort((a, b) => (a.population ?? 0) - (b.population ?? 0));
-      case "population-desc":
-        return arr.sort((a, b) => (b.population ?? 0) - (a.population ?? 0));
-      default:
-        return arr;
-    }
+    return sortCountries(filteredYear, sortOption);
   }, [filteredYear, sortOption]);
 
   return (

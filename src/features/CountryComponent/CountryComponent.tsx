@@ -1,13 +1,5 @@
-import type { CO2Data } from "../../utils/types.types";
+import type { CountryData } from "../../utils/types.types";
 import styles from "./CountryComponent.module.css";
-
-export type CountryData = {
-  population: number | null;
-  year: number | null;
-  name: string;
-  iso: string | null;
-  data: CO2Data[];
-};
 
 export const CountryComponent = ({ data }: { data: CountryData }) => {
   return (

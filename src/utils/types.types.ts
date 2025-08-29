@@ -71,3 +71,11 @@ export type CO2 = Record<
     data: CO2Data[];
   }
 >;
+
+export type CountryData = {
+  population: number | null;
+  year?: number | null;
+  name: string;
+  iso: string | null;
+  data: CO2Data[];
+};
