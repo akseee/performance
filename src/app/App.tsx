@@ -1,9 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+} from "react";
 import styles from "./App.module.css";
 
 import cslx from "clsx";
 import type { CO2, CO2Data } from "../utils/types.types";
-import { CountryComponent } from "../features/CountryComponent/CountryComponent";
+import { MemoizedCountryComponent } from "../features/CountryComponent/CountryComponent";
 import {
   filterQuery,
   filterYear,
@@ -13,17 +19,41 @@ import { Modal } from "../components/Modal/Modal";
 import { Settings } from "../components/Settings/Settings";
 
 export const App = () => {
-  const [selectedYear, setSelectedYear] = useState(2023);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortOption, setSortOption] = useState("name-asc");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [year, setYear] = useState<null | number>(null);
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("name-asc");
   const [selectedSettings, setSelectedSettings] = useState<
     Array<keyof CO2Data>
   >([]);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [dataRaw, setDataRaw] = useState<CO2 | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const handleYearChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setYear(Number(e.target.value));
+  }, []);
+
+  const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+  }, []);
+
+  const handleSortChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    setSort(e.target.value);
+  }, []);
+
+  const handleSettingsChange = useCallback((fields: Array<keyof CO2Data>) => {
+    setSelectedSettings(fields);
+  }, []);
+
+  const handleOpenModal = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -61,6 +91,7 @@ export const App = () => {
         arr.length > 0
           ? arr.reduce((acc, cur) => (acc.year > cur.year ? acc : cur), arr[0])
           : undefined;
+
       return {
         name,
         iso:
@@ -78,17 +109,21 @@ export const App = () => {
     });
   }, [dataRaw]);
 
-  const filteredQuery = useMemo(() => {
-    return filterQuery(countries, searchQuery);
-  }, [countries, searchQuery]);
+  const filteredByQuery = useMemo(() => {
+    return filterQuery(countries, query);
+  }, [countries, query]);
 
-  const filteredYear = useMemo(() => {
-    return filterYear(filteredQuery, selectedYear);
-  }, [filteredQuery, selectedYear]);
+  const filteredByYear = useMemo(() => {
+    return year !== null ? filterYear(filteredByQuery, year) : filteredByQuery;
+  }, [filteredByQuery, year]);
 
   const sortedCountries = useMemo(() => {
-    return sortCountries(filteredYear, sortOption);
-  }, [filteredYear, sortOption]);
+    return sortCountries(filteredByYear, sort);
+  }, [filteredByYear, sort]);
+
+  const settings = useMemo(() => {
+    return [...selectedSettings];
+  }, [selectedSettings]);
 
   return (
     <div className={styles.container}>
@@ -101,8 +136,8 @@ export const App = () => {
           Search:
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={query}
+            onChange={handleSearchChange}
             className={styles.input}
             placeholder="Enter country name..."
           />
@@ -110,8 +145,8 @@ export const App = () => {
         <label>
           Year:
           <input
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            value={year ?? ""}
+            onChange={handleYearChange}
             className={styles.select}
             type="number"
             min={1600}
@@ -121,8 +156,8 @@ export const App = () => {
         <label>
           Sort by:
           <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
+            value={sort}
+            onChange={handleSortChange}
             className={styles.select}
           >
             <option value="name-asc">Name (A → Z)</option>
@@ -133,15 +168,14 @@ export const App = () => {
         </label>
       </section>
 
-      <button className={styles.button} onClick={() => setIsModalOpen(true)}>
+      <button className={styles.button} onClick={handleOpenModal}>
         Select Columns
       </button>
-      <Modal isOpen={isModalOpen} handleClose={() => setIsModalOpen(false)}>
-        <Settings
-          selectedFields={selectedSettings}
-          onChange={setSelectedSettings}
-        />
-      </Modal>
+      {isModalOpen && (
+        <Modal isOpen={isModalOpen} handleClose={handleCloseModal}>
+          <Settings selectedFields={settings} onChange={handleSettingsChange} />
+        </Modal>
+      )}
       <main className={styles.main}>
         {error && <div> An error has occured: {error}</div>}
         <table className={cslx(styles.table, styles["all-data"])}>
@@ -151,18 +185,18 @@ export const App = () => {
               <th>name</th>
               <th>population (latest)</th>
               <th>ISO</th>
-              {selectedSettings.map((item: string, index) => {
+              {settings.map((item: string, index) => {
                 return <th key={index}>{item}</th>;
               })}
             </tr>
           </thead>
           <tbody>
-            {sortedCountries.map((c, index) => {
+            {sortedCountries.map((c) => {
               return (
-                <CountryComponent
-                  key={index}
+                <MemoizedCountryComponent
+                  key={c.name}
                   data={c}
-                  settings={selectedSettings}
+                  settings={settings}
                 />
               );
             })}

@@ -1,7 +1,8 @@
+import { memo } from "react";
 import type { CO2Data, CountryData } from "../../utils/types.types";
 import styles from "./CountryComponent.module.css";
 
-export const CountryComponent = ({
+const CountryComponent = ({
   data,
   settings,
 }: {
@@ -22,3 +23,5 @@ export const CountryComponent = ({
     </tr>
   );
 };
+
+export const MemoizedCountryComponent = memo(CountryComponent);
