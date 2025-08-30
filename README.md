@@ -36,7 +36,7 @@ without optimization
 vs with optimization
 ![alt text](/public/{55DA25BD-C10B-4A89-A5A7-0BDBBD677D6E}.png)
 
-3.  When I selected the same year several times in a row. Honestly the change is not big, currently im working on improving it. Wrapping a compoennt that uses find methods doesnt make sense since its
+3.  When I selected the same year several times in a row. Currently the change is not big, working on improving it.
 
 without optimization
 ![alt text](/public/{FAEF20CF-215A-4691-9F54-5E212C9CC1EF}.png)

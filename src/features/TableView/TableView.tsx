@@ -8,18 +8,24 @@ import {
   sortCountries,
 } from "../../utils/tableFunctions";
 import { getCO2Resource } from "../../utils/fetchData";
+import {
+  getAllSettings,
+  getLastAddedSettings,
+} from "../../app/store/applicationSlice";
+import { useSelector } from "../../app/store/store";
 
 const TableView = ({
   year,
   query,
   sort,
-  settings,
 }: {
   year: number | null;
   query: string;
   sort: string;
-  settings: Array<keyof CO2Data>;
 }) => {
+  const settings = useSelector(getAllSettings);
+  const lastAdded = useSelector(getLastAddedSettings);
+
   const dataRaw = getCO2Resource();
 
   const countries = useMemo(() => {
@@ -81,6 +87,7 @@ const TableView = ({
                 key={c.name}
                 data={c}
                 settings={settings}
+                lastAdded={lastAdded}
               />
             );
           })}

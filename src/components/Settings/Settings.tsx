@@ -1,35 +1,29 @@
+import { appActions, getAllSettings } from "../../app/store/applicationSlice";
+import { useDispatch, useSelector } from "../../app/store/store";
 import { settings } from "../../utils/contants";
 import type { CO2Data } from "../../utils/types.types";
 import styles from "./Settings.module.css";
-import React from "react";
 
-interface SettingsProps {
-  selectedFields: Array<keyof CO2Data>;
-  onChange: (fields: Array<keyof CO2Data>) => void;
-}
+export const Settings = () => {
+  const dispatch = useDispatch();
+  const selectedFields = useSelector(getAllSettings);
 
-export const Settings: React.FC<SettingsProps> = ({
-  selectedFields,
-  onChange,
-}) => {
   const handleToggle = (field: keyof CO2Data) => {
     if (selectedFields.includes(field)) {
-      onChange(selectedFields.filter((f) => f !== field));
+      dispatch(appActions.removeSetting(field));
     } else {
-      onChange([...selectedFields, field]);
+      dispatch(appActions.addSetting(field));
     }
+  };
+
+  const handleClear = () => {
+    dispatch(appActions.clearSettings());
   };
 
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>Select columns</h3>
-      <button
-        onClick={() => {
-          onChange([]);
-        }}
-      >
-        Clear
-      </button>
+      <button onClick={handleClear}>Clear</button>
       <ul className={styles.fieldList}>
         {settings.map((field, index) => (
           <li key={index}>

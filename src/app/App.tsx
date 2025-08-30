@@ -1,13 +1,6 @@
 import styles from "./App.module.css";
 
-import {
-  Suspense,
-  useCallback,
-  useMemo,
-  useState,
-  type ChangeEvent,
-} from "react";
-import type { CO2Data } from "../utils/types.types";
+import { Suspense, useCallback, useState, type ChangeEvent } from "react";
 
 import { Modal } from "../components/Modal/Modal";
 import { Settings } from "../components/Settings/Settings";
@@ -18,9 +11,6 @@ export const App = () => {
   const [year, setYear] = useState<null | number>(null);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("name-asc");
-  const [selectedSettings, setSelectedSettings] = useState<
-    Array<keyof CO2Data>
-  >([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -36,10 +26,6 @@ export const App = () => {
     setSort(e.target.value);
   }, []);
 
-  const handleSettingsChange = useCallback((fields: Array<keyof CO2Data>) => {
-    setSelectedSettings(fields);
-  }, []);
-
   const handleOpenModal = useCallback(() => {
     setIsModalOpen(true);
   }, []);
@@ -47,10 +33,6 @@ export const App = () => {
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
   }, []);
-
-  const settings = useMemo(() => {
-    return [...selectedSettings];
-  }, [selectedSettings]);
 
   return (
     <div className={styles.container}>
@@ -100,17 +82,12 @@ export const App = () => {
       </button>
       {isModalOpen && (
         <Modal isOpen={isModalOpen} handleClose={handleCloseModal}>
-          <Settings selectedFields={settings} onChange={handleSettingsChange} />
+          <Settings />
         </Modal>
       )}
       <main className={styles.main}>
         <Suspense fallback={<Loader />}>
-          <LazyTableView
-            year={year}
-            query={query}
-            sort={sort}
-            settings={settings}
-          />
+          <LazyTableView year={year} query={query} sort={sort} />
         </Suspense>
       </main>
     </div>
