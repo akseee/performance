@@ -32,12 +32,16 @@ const CountryComponent = ({
       <td>{data.iso ?? "NA"}</td>
       {settings &&
         settings.map((item, index) => {
+          const content =
+            yearData && typeof yearData[item] === "number"
+              ? yearData[item].toFixed(4)
+              : "NA";
           return (
             <td
               key={index}
               className={clsx(item === highlighted && styles.highlight)}
             >
-              {yearData?.[item] ?? "NA"}
+              {content}
             </td>
           );
         })}
