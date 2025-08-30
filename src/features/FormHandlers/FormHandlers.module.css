@@ -1,0 +1,13 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1em;
+  width: 100%;
+}
+
+.input {
+  margin-left: 2em;
+  padding: 0.5em 1em;
+}

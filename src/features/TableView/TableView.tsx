@@ -11,18 +11,13 @@ import { getCO2Resource } from "../../utils/fetchData";
 import {
   getAllSettings,
   getLastAddedSettings,
+  getQuery,
+  getSort,
+  getYear,
 } from "../../app/store/applicationSlice";
 import { useSelector } from "../../app/store/store";
 
-const TableView = ({
-  year,
-  query,
-  sort,
-}: {
-  year: number | null;
-  query: string;
-  sort: string;
-}) => {
+const TableView = () => {
   const settings = useSelector(getAllSettings);
   const lastAdded = useSelector(getLastAddedSettings);
 
@@ -53,6 +48,10 @@ const TableView = ({
       };
     });
   }, [dataRaw]);
+
+  const year = useSelector(getYear);
+  const query = useSelector(getQuery);
+  const sort = useSelector(getSort);
 
   const filteredByQuery = useMemo(() => {
     return filterQuery(countries, query);

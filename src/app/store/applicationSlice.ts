@@ -1,11 +1,16 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { CO2Data } from "../../utils/types.types";
 
-const sliceName = "appSlice";
+const sliceName = "applicationSlice";
 interface InitialState {
   settings: {
     data: Array<keyof CO2Data>;
     lastAdded: keyof CO2Data | null;
+  };
+  form: {
+    query: string;
+    year: number | null;
+    sort: string;
   };
 }
 
@@ -14,9 +19,14 @@ const initialState: InitialState = {
     data: [],
     lastAdded: null,
   },
+  form: {
+    query: "",
+    year: null,
+    sort: "name-asc",
+  },
 };
 
-const appSlice = createSlice({
+const applicationSlice = createSlice({
   name: sliceName,
   initialState,
   reducers: {
@@ -29,9 +39,22 @@ const appSlice = createSlice({
         (item) => item !== action.payload
       );
     },
+
     clearSettings: (state) => {
       state.settings.data = [];
       state.settings.lastAdded = null;
+    },
+
+    changeYear: (state, action: PayloadAction<number>) => {
+      state.form.year = action.payload;
+    },
+
+    changeQuery: (state, action: PayloadAction<string>) => {
+      state.form.query = action.payload;
+    },
+
+    changeSort: (state, action: PayloadAction<string>) => {
+      state.form.sort = action.payload;
     },
   },
 });
@@ -42,5 +65,14 @@ export const getAllSettings = (state: { appSlice: InitialState }) =>
 export const getLastAddedSettings = (state: { appSlice: InitialState }) =>
   state.appSlice.settings.lastAdded;
 
-export const appReducer = appSlice.reducer;
-export const appActions = appSlice.actions;
+export const getSort = (state: { appSlice: InitialState }) =>
+  state.appSlice.form.sort;
+
+export const getQuery = (state: { appSlice: InitialState }) =>
+  state.appSlice.form.query;
+
+export const getYear = (state: { appSlice: InitialState }) =>
+  state.appSlice.form.year;
+
+export const appReducer = applicationSlice.reducer;
+export const appActions = applicationSlice.actions;
