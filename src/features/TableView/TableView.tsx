@@ -61,7 +61,7 @@ const TableView = ({
   }, [filteredByYear, sort]);
 
   return (
-    <>
+    <div className={styles.wrapper}>
       <table className={styles.table}>
         <thead className={styles.headers}>
           <tr>
@@ -86,7 +86,7 @@ const TableView = ({
           })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
