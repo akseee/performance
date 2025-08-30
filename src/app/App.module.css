@@ -36,18 +36,9 @@
   padding: 5px;
 }
 
-.button {
-  padding: 5px 10px;
-  cursor: pointer;
-}
-
 .main {
   display: grid;
   gap: 20px;
   color: black;
   background-color: white;
-}
-
-.headers {
-  background-color: #797979;
 }
