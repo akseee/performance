@@ -45,6 +45,7 @@ const TableView = () => {
           : null,
         data: arr,
         year: latest?.year,
+        yearData: latest,
       };
     });
   }, [dataRaw]);
@@ -72,10 +73,10 @@ const TableView = () => {
           <tr>
             <th>year</th>
             <th>name</th>
-            <th>population (latest)</th>
+            <th>population </th>
             <th>ISO</th>
-            {settings.map((item: string, index) => {
-              return <th key={index}>{item}</th>;
+            {settings.map((item) => {
+              return <th key={item}>{item}</th>;
             })}
           </tr>
         </thead>

@@ -14,6 +14,7 @@ export function filterYear(array: CountryData[], year: number) {
       ...country,
       population: yearData?.population ?? null,
       year: yearData?.year ?? null,
+      yearData: yearData,
     };
   });
 }
