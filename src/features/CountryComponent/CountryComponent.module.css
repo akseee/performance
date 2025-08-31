@@ -1,0 +1,8 @@
+.row:hover td {
+  background-color: rgb(229, 255, 227);
+}
+
+.highlight {
+  background-color: rgb(185, 192, 157);
+  transition: background-color 0.5s ease;
+}

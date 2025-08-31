@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
+  color: black;
+  background-color: white;
+}
+
+.title {
+  text-align: center;
+}
+
+.fieldList {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.fieldList li label:hover {
+  color: blue;
+  cursor: pointer;
+}
+
+.fieldList li label:has(input:checked) {
+  color: blue;
+  font-weight: 600;
+}

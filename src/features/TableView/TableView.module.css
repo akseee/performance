@@ -1,0 +1,11 @@
+.wrapper {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.headers th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #797979;
+}
