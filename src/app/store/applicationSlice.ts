@@ -1,8 +1,4 @@
-import {
-  createSelector,
-  createSlice,
-  type PayloadAction,
-} from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { CO2Data } from "../../utils/types.types";
 
 const sliceName = "applicationSlice";
@@ -63,30 +59,20 @@ const applicationSlice = createSlice({
   },
 });
 
-export const getAllSettings = createSelector(
-  [(state: { appSlice: InitialState }) => state.appSlice.settings.data],
-  (data) => data
-);
+export const getAllSettings = (state: { appSlice: InitialState }) =>
+  state.appSlice.settings.data;
 
-export const getLastAddedSettings = createSelector(
-  [(state: { appSlice: InitialState }) => state.appSlice.settings.lastAdded],
-  (lastAdded) => lastAdded
-);
+export const getLastAddedSettings = (state: { appSlice: InitialState }) =>
+  state.appSlice.settings.lastAdded;
 
-export const getSort = createSelector(
-  [(state: { appSlice: InitialState }) => state.appSlice.form.sort],
-  (sort) => sort
-);
+export const getSort = (state: { appSlice: InitialState }) =>
+  state.appSlice.form.sort;
 
-export const getQuery = createSelector(
-  [(state: { appSlice: InitialState }) => state.appSlice.form.query],
-  (query) => query
-);
+export const getQuery = (state: { appSlice: InitialState }) =>
+  state.appSlice.form.query;
 
-export const getYear = createSelector(
-  [(state: { appSlice: InitialState }) => state.appSlice.form.year],
-  (year) => year
-);
+export const getYear = (state: { appSlice: InitialState }) =>
+  state.appSlice.form.year;
 
 export const appReducer = applicationSlice.reducer;
 export const appActions = applicationSlice.actions;
