@@ -27,16 +27,16 @@ The optimizations includes:
 without optimization
 ![alt text](/public/{9DF68C6C-4736-4DA5-8284-E18EF6CE0848}.png)
 vs with optimization
-![alt text](/public/{5FCB4B2B-1F60-4914-B08A-412EC038210E}.png)
+![alt text]({E98DFE96-AC0A-4B85-A4CF-46846B103776}.png)
 
-2. The same picture is observed with sorting. When selecting the same sorting type several times in a row, useMemo prevents repeated heavy calculations, and the performance is better
+2. The same picture is observed with sorting. When selecting sorting several times in a row, useMemo prevents repeated heavy rerenders for country cards compoennnt, as we can see wrapping its compoennt in react.memo actually did good job
 
 without optimization
 ![alt text](/public/{01D62E1C-6530-4CE1-A561-C66528E6288D}.png)
 vs with optimization
-![alt text](/public/{55DA25BD-C10B-4A89-A5A7-0BDBBD677D6E}.png)
+![alt text]({095C8469-8166-4769-8FD0-4AC9FE628135}.png)
 
-3.  When I selected the same year several times in a row. Currently the change is not big, working on improving it.
+3.  When I selected the same year several times in a row. Change is not massive. But the calculation for changed year data will have to happen either way to keep it dynamic
 
 without optimization
 ![alt text](/public/{FAEF20CF-215A-4691-9F54-5E212C9CC1EF}.png)
